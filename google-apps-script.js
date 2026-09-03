@@ -29,7 +29,6 @@ function doPost(e) {
       sheet.appendRow([
         "접수일시",
         "신청ID",
-        "소속학교",
         "반",
         "번호",
         "이름",
@@ -42,7 +41,7 @@ function doPost(e) {
       ]);
 
       // 헤더 스타일링 (에메랄드/그린 테마 및 볼드 처리)
-      var headerRange = sheet.getRange(1, 1, 1, 12);
+      var headerRange = sheet.getRange(1, 1, 1, 11);
       headerRange.setBackground("#E6F4EA");
       headerRange.setFontColor("#137333");
       headerRange.setFontWeight("bold");
@@ -55,7 +54,6 @@ function doPost(e) {
     var submissionId = "KM-" + Utilities.formatDate(timestamp, "Asia/Seoul", "yyyyMMdd-HHmmss") + "-" + Math.floor(Math.random() * 899 + 100);
     var formattedDate = Utilities.formatDate(timestamp, "Asia/Seoul", "yyyy-MM-dd HH:mm:ss");
 
-    var highSchool = requestData.highSchool || "금옥여자고등학교";
     var studentClass = requestData.studentClass;
     var studentNumber = requestData.studentNumber;
     var studentName = requestData.studentName;
@@ -69,7 +67,6 @@ function doPost(e) {
       rowsToAdd.push([
         formattedDate,
         submissionId,
-        highSchool,
         studentClass + "반",
         studentNumber + "번",
         studentName,
@@ -88,9 +85,9 @@ function doPost(e) {
       var numCols = rowsToAdd[0].length;
       sheet.getRange(startRow, 1, numRows, numCols).setValues(rowsToAdd);
       
-      // 주요 열(일시, ID, 소속, 반, 번호, 이름, 순번, 계열, 면접일정) 가운데 정렬
-      sheet.getRange(startRow, 1, numRows, 7).setHorizontalAlignment("center");
-      sheet.getRange(startRow, 11, numRows, 2).setHorizontalAlignment("center");
+      // 주요 열(일시, ID, 반, 번호, 이름, 순번, 계열, 면접일정) 가운데 정렬
+      sheet.getRange(startRow, 1, numRows, 6).setHorizontalAlignment("center");
+      sheet.getRange(startRow, 10, numRows, 2).setHorizontalAlignment("center");
     }
 
     return ContentService.createTextOutput(JSON.stringify({
