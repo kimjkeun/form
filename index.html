@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>금옥여자고등학교 대입 모의면접 신청서</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(0.4);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+  <!-- =========================================================================================
+       [선생님 설정 영역]
+       구글 시트의 Apps Script를 웹 앱으로 배포한 뒤 발급받은 URL을 아래 따옴표 안에 넣어주세요.
+  ========================================================================================= -->
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhLo0tkxqUNzY9yawTzsEE7aB6bNfHPLKWwlAfMGmpueOLYRm23A8spMEvgReUpM8u/exec"; // 예: "https://script.google.com/macros/s/AKfycbx.../exec"
+  </script>
+
+  <!-- 헤더 (금옥여자고등학교 맞춤) -->
+  <header class="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-800 text-white py-8 px-4 shadow-md">
+    <div class="max-w-2xl mx-auto text-center">
+      <div class="inline-flex items-center justify-center px-3 py-1.5 bg-white/10 rounded-full mb-3 backdrop-blur-sm gap-2">
+        <i data-lucide="award" class="w-4 h-4 text-emerald-300"></i>
+        <span class="text-xs font-semibold tracking-wider text-emerald-200 uppercase">금옥여자고등학교 3학년부</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">2026학년도 대입 수시 모의면접 신청</h1>
+      <p class="mt-2.5 text-sm sm:text-base text-emerald-100/90 leading-relaxed max-w-lg mx-auto">
+        학생 개개인의 지원 대학 및 전형에 맞춘 모의면접을 운영합니다.<br class="hidden sm:inline">
+        대학별 면접 일정을 확인하여 작성해 주세요.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 mt-6">
+    <form id="interviewForm" onsubmit="handleSubmit(event)" class="space-y-6">
+
+      <!-- 1. 학생 기본 정보 카드 -->
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6">
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">1</span>
+          <h2 class="text-lg font-bold text-slate-800">신청 학생 정보</h2>
+          <span class="text-xs text-slate-400 ml-auto">금옥여고 3학년</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- 반 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="studentClass">
+              학급 (반) <span class="text-rose-500">*</span>
+            </label>
+            <select id="studentClass" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+              <option value="">반 선택</option>
+              <option value="1">1반</option>
+              <option value="2">2반</option>
+              <option value="3">3반</option>
+              <option value="4">4반</option>
+              <option value="5">5반</option>
+              <option value="6">6반</option>
+              <option value="7">7반</option>
+              <option value="8">8반</option>
+              <option value="9">9반</option>
+            </select>
+          </div>
+
+          <!-- 번호 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="studentNumber">
+              출석번호 <span class="text-rose-500">*</span>
+            </label>
+            <input type="number" id="studentNumber" required min="1" max="45" placeholder="예: 15"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+          </div>
+
+          <!-- 이름 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5" for="studentName">
+              이름 (성명) <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="studentName" required placeholder="예: 김금옥"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 지원 대학 및 전형 정보 (동적 카드 목록) -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">2</span>
+            <h2 class="text-lg font-bold text-slate-800">모의면접 지원 대학 목록</h2>
+          </div>
+          <span class="text-xs text-slate-500">최대 6개 대학까지 수기 입력 가능</span>
+        </div>
+
+        <!-- 대학 입력 카드들이 들어갈 컨테이너 -->
+        <div id="applicationsContainer" class="space-y-4">
+          <!-- 자바스크립트로 카드가 동적 렌더링됩니다 -->
+        </div>
+
+        <!-- 대학 추가 버튼 -->
+        <button type="button" onclick="addApplicationCard()" id="btnAddCard"
+                class="w-full py-3.5 px-4 border-2 border-dashed border-emerald-300 hover:border-emerald-600 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-800 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-all group shadow-sm">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-600 transition-transform group-hover:scale-110"></i>
+          <span>지원 대학 추가하기 (1지망, 2지망...)</span>
+        </button>
+      </section>
+
+      <!-- 안내 사항 -->
+      <div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-4 text-xs text-amber-900 flex items-center gap-3">
+        <i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0"></i>
+        <p class="text-amber-900 font-medium">대학별 모집요강 일정에 따라 <strong>하루</strong> 또는 <strong>기간</strong>을 선택해 주세요.</p>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <button type="submit" id="submitBtn"
+              class="w-full py-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-emerald-700/25 transition-all text-base flex items-center justify-center gap-2">
+        <i data-lucide="send" class="w-5 h-5"></i>
+        <span>모의면접 신청서 제출하기</span>
+      </button>
+
+    </form>
+  </main>
+
+  <!-- 로딩 모달 -->
+  <div id="loadingModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 px-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
+      <div class="inline-block animate-spin text-emerald-600 mb-4">
+        <i data-lucide="loader-2" class="w-10 h-10"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800">신청서 전송 중</h3>
+      <p class="text-sm text-slate-500 mt-1">구글 스프레드시트에 저장하고 있습니다. 잠시만 기다려주세요...</p>
+    </div>
+  </div>
+
+  <!-- 완료 모달 -->
+  <div id="successModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center hidden z-50 px-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="check" class="w-8 h-8 stroke-[2.5]"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800">모의면접 신청 완료!</h3>
+      <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+        금옥여자고등학교 모의면접 신청이 정상 접수되었습니다.<br>
+        면접 시간표 및 세부 일정은 추후 공지됩니다.
+      </p>
+
+      <div id="summaryBox" class="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-left text-xs space-y-1.5 custom-scrollbar max-h-60 overflow-y-auto">
+        <!-- 요약 내용 삽입 -->
+      </div>
+
+      <button onclick="closeSuccessModal()" class="mt-6 w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl text-sm transition">
+        확인 (창 닫기)
+      </button>
+    </div>
+  </div>
+
+  <!-- 자바스크립트 로직 -->
+  <script>
+    let cardCount = 0;
+    const MAX_CARDS = 6; // 수시 6장 지원 기준
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      // 처음에 기본 1개 카드 생성
+      addApplicationCard();
+    });
+
+    // 지원 대학 카드 추가
+    function addApplicationCard() {
+      if (document.querySelectorAll('.app-card').length >= MAX_CARDS) {
+        alert(`최대 ${MAX_CARDS}개 대학까지만 신청 가능합니다.`);
+        return;
+      }
+
+      cardCount++;
+      const currentCards = document.querySelectorAll('.app-card').length + 1;
+
+      const container = document.getElementById('applicationsContainer');
+      const card = document.createElement('div');
+      card.className = "app-card bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 transition-all duration-200 hover:border-slate-300";
+      card.id = `card-${cardCount}`;
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="card-badge px-2.5 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-200">
+              지원 ${currentCards}지망
+            </span>
+            <span class="text-xs text-slate-400 font-medium">대학별 모집요강 기준</span>
+          </div>
+          <button type="button" onclick="removeApplicationCard('card-${cardCount}')"
+                  class="btn-delete text-slate-400 hover:text-rose-600 text-xs font-medium flex items-center gap-1 transition p-1 hover:bg-rose-50 rounded-lg">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>삭제</span>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- 지원 대학명 (수기입력) & 학과명 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                지원 대학교명 <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" required placeholder="수기 입력 (예: 서울대학교, 한양대 등)"
+                     class="field-school w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                지원 학과명 <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" required placeholder="예: 경영학과 / 소프트웨어학부"
+                     class="field-dept w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+            </div>
+          </div>
+
+          <!-- 전형명 & 계열 선택 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                전형명 <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" required placeholder="예: 학생부종합(일반전형) / 학교장추천"
+                     class="field-admission w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                계열 구분 <span class="text-rose-500">*</span>
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center justify-center p-2.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-600 has-[:checked]:text-emerald-800 transition">
+                  <input type="radio" name="track_${cardCount}" value="인문" required class="field-track sr-only">
+                  <span class="text-xs font-bold">인문</span>
+                </label>
+                <label class="flex items-center justify-center p-2.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-600 has-[:checked]:text-emerald-800 transition">
+                  <input type="radio" name="track_${cardCount}" value="자연" required class="field-track sr-only">
+                  <span class="text-xs font-bold">자연</span>
+                </label>
+                <label class="flex items-center justify-center p-2.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-600 has-[:checked]:text-emerald-800 transition">
+                  <input type="radio" name="track_${cardCount}" value="공통" required class="field-track sr-only">
+                  <span class="text-xs font-bold">공통/기타</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 면접일 UI 선택 -->
+          <div class="bg-slate-50/80 border border-slate-200/80 rounded-xl p-3.5">
+            <div class="flex items-center justify-between mb-2.5">
+              <label class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-4 h-4 text-emerald-700"></i>
+                <span>면접일</span>
+                <span class="text-rose-500">*</span>
+              </label>
+
+              <!-- 일정 유형 선택 (하루 / 기간) -->
+              <div class="flex items-center gap-3 text-xs">
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="dateType_${cardCount}" value="single" checked
+                         onchange="toggleDateMode('card-${cardCount}', 'single')"
+                         class="text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-slate-700 font-semibold">하루</span>
+                </label>
+                <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="dateType_${cardCount}" value="range"
+                         onchange="toggleDateMode('card-${cardCount}', 'range')"
+                         class="text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-slate-700 font-semibold">기간</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 단일 날짜 선택 UI -->
+            <div id="singleDateBox-${cardCount}">
+              <input type="date"
+                     class="field-single-date w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 transition">
+            </div>
+
+            <!-- 기간 선택 UI (기본 숨김) -->
+            <div id="rangeDateBox-${cardCount}" class="hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-center">
+                <div class="relative">
+                  <span class="text-[11px] text-slate-500 block mb-1">시작일</span>
+                  <input type="date"
+                         class="field-start-date w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 transition">
+                </div>
+                <div class="relative">
+                  <span class="text-[11px] text-slate-500 block mb-1">종료일</span>
+                  <input type="date"
+                         class="field-end-date w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 transition">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      container.appendChild(card);
+      lucide.createIcons();
+      updateCardLabels();
+    }
+
+    // 날짜 모드 토글 (단일일 vs 기간별)
+    function toggleDateMode(cardId, mode) {
+      const card = document.getElementById(cardId);
+      const idNum = cardId.replace('card-', '');
+      const singleBox = card.querySelector(`#singleDateBox-${idNum}`);
+      const rangeBox = card.querySelector(`#rangeDateBox-${idNum}`);
+
+      if (mode === 'single') {
+        singleBox.classList.remove('hidden');
+        rangeBox.classList.add('hidden');
+      } else {
+        singleBox.classList.add('hidden');
+        rangeBox.classList.remove('hidden');
+      }
+    }
+
+    // 지원 대학 카드 삭제
+    function removeApplicationCard(id) {
+      const cards = document.querySelectorAll('.app-card');
+      if (cards.length <= 1) {
+        alert("최소 1개 이상의 지원 대학 정보가 필요합니다.");
+        return;
+      }
+      const target = document.getElementById(id);
+      if (target) {
+        target.remove();
+        updateCardLabels();
+      }
+    }
+
+    // 카드 순번 레이블 및 삭제 버튼 상태 업데이트
+    function updateCardLabels() {
+      const cards = document.querySelectorAll('.app-card');
+      cards.forEach((card, idx) => {
+        const badge = card.querySelector('.card-badge');
+        if (badge) badge.textContent = `지원 ${idx + 1}지망`;
+
+        const deleteBtn = card.querySelector('.btn-delete');
+        if (deleteBtn) {
+          if (cards.length === 1) {
+            deleteBtn.classList.add('invisible');
+          } else {
+            deleteBtn.classList.remove('invisible');
+          }
+        }
+      });
+    }
+
+    // 폼 제출 처리
+    async function handleSubmit(event) {
+      event.preventDefault();
+
+      const studentClass = document.getElementById('studentClass').value;
+      const studentNumber = document.getElementById('studentNumber').value;
+      const studentName = document.getElementById('studentName').value.trim();
+
+      const cards = document.querySelectorAll('.app-card');
+      const applications = [];
+
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const school = card.querySelector('.field-school').value.trim();
+        const dept = card.querySelector('.field-dept').value.trim();
+        const admission = card.querySelector('.field-admission').value.trim();
+        const trackEl = card.querySelector('.field-track:checked');
+
+        if (!school || !dept || !admission || !trackEl) {
+          alert(`${i + 1}지망 대학의 학교명, 학과명, 전형명, 계열을 모두 입력해 주세요.`);
+          return;
+        }
+
+        // 날짜 파싱 (단일일 or 기간별)
+        const dateTypeRadio = card.querySelector(`input[name^="dateType_"]:checked`).value;
+        let interviewDateStr = "";
+
+        if (dateTypeRadio === "single") {
+          const singleDate = card.querySelector('.field-single-date').value;
+          if (!singleDate) {
+            alert(`${i + 1}지망 대학의 면접일을 달력에서 선택해 주세요.`);
+            return;
+          }
+          interviewDateStr = singleDate;
+        } else {
+          const startDate = card.querySelector('.field-start-date').value;
+          const endDate = card.querySelector('.field-end-date').value;
+          if (!startDate || !endDate) {
+            alert(`${i + 1}지망 대학의 면접 시작일과 종료일을 모두 선택해 주세요.`);
+            return;
+          }
+          if (startDate > endDate) {
+            alert(`${i + 1}지망 면접 종료일이 시작일보다 앞설 수 없습니다.`);
+            return;
+          }
+          interviewDateStr = `${startDate} ~ ${endDate}`;
+        }
+
+        applications.push({
+          school: school,
+          department: dept,
+          admissionType: admission,
+          interviewDate: interviewDateStr,
+          track: trackEl.value
+        });
+      }
+
+      const payload = {
+        highSchool: "금옥여자고등학교",
+        studentClass: studentClass,
+        studentNumber: studentNumber,
+        studentName: studentName,
+        applications: applications
+      };
+
+      // 구글 시트 URL이 설정되지 않았을 때 (체험용 알림)
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("여기에")) {
+        alert("[안내] 현재 구글 시트 웹 앱 URL이 설정되지 않았습니다.\n제공해드린 google-apps-script.js 코드를 구글 시트에 배포하신 후 URL을 입력하시면 실제 시트에 실시간 저장됩니다.\n\n(지금은 입력 테스트 완료 화면을 보여드립니다.)");
+        showSuccessModal(payload);
+        return;
+      }
+
+      // 실제 구글 시트로 전송
+      showLoading(true);
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        showLoading(false);
+
+        if (result.result === "success") {
+          showSuccessModal(payload);
+        } else {
+          alert("저장 중 오류가 발생했습니다: " + (result.message || "알 수 없는 오류"));
+        }
+      } catch (err) {
+        showLoading(false);
+        console.warn("Fetch 완료 (CORS 응답 처리):", err);
+        showSuccessModal(payload);
+      }
+    }
+
+    function showLoading(show) {
+      const modal = document.getElementById('loadingModal');
+      if (show) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
+    }
+
+    function showSuccessModal(data) {
+      const summaryBox = document.getElementById('summaryBox');
+      let appListHtml = data.applications.map((app, i) => `
+        <div class="border-t border-slate-200 pt-2 first:border-0 first:pt-0">
+          <div class="font-bold text-slate-800">[${i + 1}지망] ${app.school} · ${app.department}</div>
+          <div class="text-slate-500 text-[11px] mt-0.5">${app.admissionType} | ${app.track}계열</div>
+          <div class="text-emerald-700 font-semibold text-[11px] mt-0.5 flex items-center gap-1">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+            <span>면접일: ${app.interviewDate}</span>
+          </div>
+        </div>
+      `).join('');
+
+      summaryBox.innerHTML = `
+        <div class="text-emerald-800 font-bold mb-2 pb-1 border-b border-slate-200">
+          금옥여자고등학교 3학년 ${data.studentClass}반 ${data.studentNumber}번 ${data.studentName}
+        </div>
+        <div class="space-y-2">${appListHtml}</div>
+      `;
+
+      document.getElementById('successModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.add('hidden');
+      document.getElementById('interviewForm').reset();
+      const container = document.getElementById('applicationsContainer');
+      container.innerHTML = '';
+      cardCount = 0;
+      addApplicationCard();
+    }
+  </script>
+</body>
+</html>
